@@ -1,0 +1,2 @@
+include ':GeoQuiz'
+rootProject.name = "AndroidGuideApp"
