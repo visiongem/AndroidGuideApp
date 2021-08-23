@@ -38,20 +38,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-       <!-- <Button
-            android:id="@+id/pre_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableEnd="@drawable/arrow_left"
-            android:drawablePadding="4dp"
-            android:text="@string/pre_button" />-->
-
         <ImageButton
             android:id="@+id/pre_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/arrow_left"
             android:drawablePadding="4dp"
+            android:src="@drawable/arrow_left"
             android:text="@string/pre_button" />
 
         <ImageButton
@@ -59,17 +51,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:drawablePadding="4dp"
             android:src="@drawable/arrow_right"
-            android:drawablePadding="4dp"
             android:text="@string/next_button" />
-
-        <!--<Button
-            android:id="@+id/next_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:drawableEnd="@drawable/arrow_right"
-            android:drawablePadding="4dp"
-            android:text="@string/next_button" />-->
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/black" />
 </LinearLayout>

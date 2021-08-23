@@ -2,70 +2,44 @@ package com.pyn.androidguide
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import com.pyn.androidguide.databinding.ActivityMainBinding
 
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
-private const val KEY_QUESTION_ANSWERED = "answered"
-private const val KEY_TRUE_ANSWER_COUNT = "true_answer_count"
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var trueButton: Button
-    private lateinit var falseButton: Button
-    private lateinit var nextButton: ImageButton
-    private lateinit var preButton: ImageButton
-    private lateinit var questionTextView: TextView
+    private lateinit var mBinding: ActivityMainBinding
 
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true)
-    )
-    private var currentIndex = 0
-
-    private var mQuestionsAnswered: BooleanArray? = BooleanArray(questionBank.size)
-
-    private var mTrueAnswerCount = 0
+    private val quizViewModel by lazy { ViewModelProvider(this)[QuizViewModel::class.java] }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        Log.d(TAG, "onCreate(savedInstanceState: Bundle?) called")
+        mBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(mBinding.root)
         if (savedInstanceState != null) {
-            currentIndex = savedInstanceState.getInt(KEY_INDEX, 0)
-            mQuestionsAnswered = savedInstanceState.getBooleanArray(KEY_QUESTION_ANSWERED)
-            mTrueAnswerCount = savedInstanceState.getInt(KEY_TRUE_ANSWER_COUNT)
+            quizViewModel.currentIndex = savedInstanceState.getInt(KEY_INDEX, 0)
         }
+        Log.i(TAG, "onCreate(savedInstanceState: Bundle?) called")
 
-        trueButton = findViewById(R.id.true_button)
-        falseButton = findViewById(R.id.false_button)
-        nextButton = findViewById(R.id.next_button)
-        preButton = findViewById(R.id.pre_button)
-        questionTextView = findViewById(R.id.question_text_view)
+        mBinding.trueButton.setOnClickListener { checkAnswer(true) }
+        mBinding.falseButton.setOnClickListener { checkAnswer(false) }
 
-        trueButton.setOnClickListener { checkAnswer(true) }
-        falseButton.setOnClickListener { checkAnswer(false) }
-        nextButton.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
+        mBinding.nextButton.setOnClickListener {
+            quizViewModel.moveToNext()
             updateQuestion()
         }
 
-        preButton.setOnClickListener {
-            currentIndex = (currentIndex + questionBank.size - 1) % questionBank.size
+        mBinding.preButton.setOnClickListener {
+            quizViewModel.moveToPre()
             updateQuestion()
         }
 
-        questionTextView.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
+        mBinding.questionTextView.setOnClickListener {
+            quizViewModel.moveToNext()
             updateQuestion()
         }
 
@@ -76,30 +50,35 @@ class MainActivity : AppCompatActivity() {
      * 更新问题
      */
     private fun updateQuestion() {
-        val questionTextResId = questionBank[currentIndex].textResId
-        questionTextView.setText(questionTextResId)
+        val questionTextResId = quizViewModel.currentQuestionText
+        mBinding.questionTextView.setText(questionTextResId)
 
-        setBtnEnabled(!mQuestionsAnswered?.get(currentIndex)!!)
+        setBtnEnabled(!quizViewModel.mQuestionsAnswered?.get(quizViewModel.currentIndex)!!)
     }
 
+    /**
+     * Check answer 检测选的答案  里面还需要更新回答正确的题目数，以及已经回答过的题目index
+     *
+     * @param userAnswer
+     */
     private fun checkAnswer(userAnswer: Boolean) {
-        val correctAnswer = questionBank[currentIndex].answer
+        val correctAnswer = quizViewModel.currentQuestionAnswer
         val messageResId = if (userAnswer == correctAnswer) {
-            mTrueAnswerCount++
+            quizViewModel.mTrueAnswerCount++
             R.string.correct_toast
         } else {
             R.string.incorrect_toast
         }
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
         setBtnEnabled(false)
-        mQuestionsAnswered?.set(currentIndex, true)
+        quizViewModel.mQuestionsAnswered?.set(quizViewModel.currentIndex, true)
         getScoreResult()
     }
 
     private fun getScoreResult() {
         var isAllAnswered = true
-        for (i in questionBank.indices) {
-            if (!mQuestionsAnswered?.get(i)!!) {
+        for (i in 0 until quizViewModel.questionSize) {
+            if (!quizViewModel.mQuestionsAnswered?.get(i)!!) {
                 isAllAnswered = false
                 return
             }
@@ -107,47 +86,48 @@ class MainActivity : AppCompatActivity() {
         if (isAllAnswered) {
             Toast.makeText(
                 this,
-                "${mTrueAnswerCount * 100 / questionBank.size} %",
+                "${quizViewModel.mTrueAnswerCount * 100 / quizViewModel.questionSize} %",
                 Toast.LENGTH_LONG
             ).show()
+            mBinding.tvResult.text =
+                "评分：${quizViewModel.mTrueAnswerCount * 100 / quizViewModel.questionSize} %"
         }
     }
 
     override fun onStart() {
         super.onStart()
-        Log.d(TAG, "onStart() called")
+        Log.i(TAG, "onStart() called")
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume() called")
+        Log.i(TAG, "onResume() called")
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d(TAG, "onPause() called")
+        Log.i(TAG, "onPause() called")
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d(TAG, "onStop() called")
+        Log.i(TAG, "onStop() called")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy() called")
+        Log.i(TAG, "onDestroy() called")
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
         Log.i(TAG, "onSaveInstanceState")
-        savedInstanceState.putInt(KEY_INDEX, currentIndex)
-        savedInstanceState.putBooleanArray(KEY_QUESTION_ANSWERED, mQuestionsAnswered)
-        savedInstanceState.putInt(KEY_TRUE_ANSWER_COUNT, mTrueAnswerCount)
+        savedInstanceState.putInt(KEY_INDEX, quizViewModel.currentIndex)
     }
 
+    // 禁止一题多答，设置button状态
     private fun setBtnEnabled(enabled: Boolean) {
-        trueButton.isEnabled = enabled
-        falseButton.isEnabled = enabled
+        mBinding.trueButton.isEnabled = enabled
+        mBinding.falseButton.isEnabled = enabled
     }
 }
