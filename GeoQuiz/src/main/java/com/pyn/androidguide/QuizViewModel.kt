@@ -11,6 +11,8 @@ class QuizViewModel : ViewModel() {
     var currentIndex = 0
     // 回答正确的题目数量
     var mTrueAnswerCount = 0
+    // 是否偷看了答案
+    var isCheater = false
 
     // 题目库
     private val questionBank = listOf(
