@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun checkAnswer(userAnswer: Boolean) {
         val correctAnswer = quizViewModel.currentQuestionAnswer
+
         val messageResId = when {
             quizViewModel.isCheater -> R.string.judgment_toast
             userAnswer == correctAnswer -> {
@@ -94,12 +95,13 @@ class MainActivity : AppCompatActivity() {
             }
             else ->
                 R.string.incorrect_toast
-
         }
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
         setBtnEnabled(false)
         quizViewModel.mQuestionsAnswered?.set(quizViewModel.currentIndex, true)
         getScoreResult()
+        // 重置一下是否偷看了答案，此题回答过了，一来不可重复回答，二来解决回答下个问题时此参数还是原来的
+        quizViewModel.isCheater = false
     }
 
     private fun getScoreResult() {
