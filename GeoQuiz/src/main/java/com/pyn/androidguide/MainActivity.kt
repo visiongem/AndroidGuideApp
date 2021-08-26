@@ -1,19 +1,21 @@
 package com.pyn.androidguide
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.pyn.androidguide.databinding.ActivityMainBinding
 
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
 const val EXTRA_ANSWER_SHOW = "extra_answer_show"
-const val DEFAULT_CAN_CHEAT_NUM:Int = 3
+const val DEFAULT_CAN_CHEAT_NUM: Int = 3
 const val KEY_CHEAT_NUM = "cheat_num"
 
 class MainActivity : AppCompatActivity() {
@@ -27,9 +29,9 @@ class MainActivity : AppCompatActivity() {
             if (it.resultCode == Activity.RESULT_OK) {
                 quizViewModel.isCheater =
                     it.data?.getBooleanExtra(EXTRA_ANSWER_SHOW, false) ?: false
-                if (quizViewModel.isCheater){
+                if (quizViewModel.isCheater) {
                     // 如果偷看了答案
-                    quizViewModel.cheatNum ++
+                    quizViewModel.cheatNum++
                     updateCheatNum()
                 }
             }
@@ -70,7 +72,9 @@ class MainActivity : AppCompatActivity() {
         // 去偷看答案
         mBinding.btnCheat.setOnClickListener {
             val answer = quizViewModel.currentQuestionAnswer
-            startForResult.launch(CheatActivity.newIntent(this, answer))
+            val option =
+                ActivityOptionsCompat.makeClipRevealAnimation(it, 0, 0, it.width, it.height)
+            startForResult.launch(CheatActivity.newIntent(this, answer), option)
         }
 
         // 更新问题
@@ -92,10 +96,10 @@ class MainActivity : AppCompatActivity() {
         setBtnEnabled(!quizViewModel.mQuestionsAnswered?.get(quizViewModel.currentIndex)!!)
     }
 
-    private fun updateCheatNum(){
+    private fun updateCheatNum() {
         var canCheatNum = DEFAULT_CAN_CHEAT_NUM - quizViewModel.cheatNum
         mBinding.tvCheatNum.text = "还可以偷看答案 $canCheatNum 次"
-        if (canCheatNum == 0){
+        if (canCheatNum == 0) {
             mBinding.btnCheat.isEnabled = false
         }
     }
