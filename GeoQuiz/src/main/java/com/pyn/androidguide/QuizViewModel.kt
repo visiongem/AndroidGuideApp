@@ -13,6 +13,8 @@ class QuizViewModel : ViewModel() {
     var mTrueAnswerCount = 0
     // 是否偷看了答案
     var isCheater = false
+    // 偷看答案次数，默认0
+    var cheatNum = 0
 
     // 题目库
     private val questionBank = listOf(

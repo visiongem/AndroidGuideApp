@@ -1,6 +1,7 @@
 package com.pyn.androidguide
 
 import android.app.Activity
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -12,6 +13,8 @@ import com.pyn.androidguide.databinding.ActivityMainBinding
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
 const val EXTRA_ANSWER_SHOW = "extra_answer_show"
+const val DEFAULT_CAN_CHEAT_NUM:Int = 3
+const val KEY_CHEAT_NUM = "cheat_num"
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +27,11 @@ class MainActivity : AppCompatActivity() {
             if (it.resultCode == Activity.RESULT_OK) {
                 quizViewModel.isCheater =
                     it.data?.getBooleanExtra(EXTRA_ANSWER_SHOW, false) ?: false
+                if (quizViewModel.isCheater){
+                    // 如果偷看了答案
+                    quizViewModel.cheatNum ++
+                    updateCheatNum()
+                }
             }
         }
 
@@ -33,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(mBinding.root)
         if (savedInstanceState != null) {
             quizViewModel.currentIndex = savedInstanceState.getInt(KEY_INDEX, 0)
+            quizViewModel.cheatNum = savedInstanceState.getInt(KEY_CHEAT_NUM, 0)
         }
         Log.i(TAG, "onCreate(savedInstanceState: Bundle?) called")
 
@@ -66,6 +75,10 @@ class MainActivity : AppCompatActivity() {
 
         // 更新问题
         updateQuestion()
+
+        updateCheatNum()
+
+        mBinding.tvCompileVersion.text = "API LEVER = ${Build.VERSION.SDK_INT}"
     }
 
 
@@ -77,6 +90,14 @@ class MainActivity : AppCompatActivity() {
         mBinding.questionTextView.setText(questionTextResId)
 
         setBtnEnabled(!quizViewModel.mQuestionsAnswered?.get(quizViewModel.currentIndex)!!)
+    }
+
+    private fun updateCheatNum(){
+        var canCheatNum = DEFAULT_CAN_CHEAT_NUM - quizViewModel.cheatNum
+        mBinding.tvCheatNum.text = "还可以偷看答案 $canCheatNum 次"
+        if (canCheatNum == 0){
+            mBinding.btnCheat.isEnabled = false
+        }
     }
 
     /**
@@ -152,6 +173,7 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(savedInstanceState)
         Log.i(TAG, "onSaveInstanceState")
         savedInstanceState.putInt(KEY_INDEX, quizViewModel.currentIndex)
+        savedInstanceState.putInt(KEY_CHEAT_NUM, quizViewModel.cheatNum)
     }
 
     // 禁止一题多答，设置button状态

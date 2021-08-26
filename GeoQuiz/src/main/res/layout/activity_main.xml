@@ -7,6 +7,12 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/tv_compile_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black" />
+
+    <TextView
         android:id="@+id/question_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -69,4 +75,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="@string/cheat_button" />
+
+    <TextView
+        android:id="@+id/tv_cheat_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black" />
 </LinearLayout>
