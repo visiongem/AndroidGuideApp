@@ -1,4 +1,4 @@
-package com.pyn.criminalintent
+package com.pyn.criminalintent.bean
 
 import java.util.*
 
@@ -7,13 +7,15 @@ import java.util.*
  *
  * @property id
  * @property title
- * @property date
- * @property isSolved
+ * @property date 日期
+ * @property isSolved 是否解决
+ * @property requiresPolice 是否需警方介入
  * @constructor Create empty Crime
  */
 data class Crime(
     val id: UUID = UUID.randomUUID(),
     var title: String = "",
     var date: Date = Date(),
-    var isSolved: Boolean = false
+    var isSolved: Boolean = false,
+    var requiresPolice: Boolean = false
 )

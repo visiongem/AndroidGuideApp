@@ -1,4 +1,4 @@
-package com.pyn.criminalintent
+package com.pyn.criminalintent.viewmodel
 
 import androidx.lifecycle.ViewModel
 

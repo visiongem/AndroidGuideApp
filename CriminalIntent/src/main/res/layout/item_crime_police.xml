@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/tv_item_crime_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Crime Title"
+        android:textColor="@android:color/holo_red_light" />
+
+    <TextView
+        android:id="@+id/tv_item_crime_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Crime Date"
+        android:textColor="@android:color/holo_red_light" />
+
+    <Button
+        android:id="@+id/btn_call_police"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="联系警方" />
+</LinearLayout>

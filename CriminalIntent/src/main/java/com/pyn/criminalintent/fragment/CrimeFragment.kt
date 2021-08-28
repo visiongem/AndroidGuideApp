@@ -1,4 +1,4 @@
-package com.pyn.criminalintent
+package com.pyn.criminalintent.fragment
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -8,7 +8,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.pyn.criminalintent.bean.Crime
 import com.pyn.criminalintent.databinding.CrimeFragmentBinding
+import com.pyn.criminalintent.viewmodel.CrimeViewModel
 
 class CrimeFragment : Fragment() {
 
@@ -42,10 +44,9 @@ class CrimeFragment : Fragment() {
         return mBinding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(CrimeViewModel::class.java)
-        // TODO: Use the ViewModel
     }
 
     override fun onStart() {
