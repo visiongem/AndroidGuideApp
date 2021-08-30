@@ -16,6 +16,7 @@ import com.pyn.criminalintent.databinding.CrimeFragmentBinding
 import com.pyn.criminalintent.databinding.CrimeListFragmentBinding
 import com.pyn.criminalintent.databinding.ItemCrimeBinding
 import com.pyn.criminalintent.databinding.ItemCrimePoliceBinding
+import com.pyn.criminalintent.utils.DateUtil
 import com.pyn.criminalintent.viewmodel.CrimeListViewModel
 
 private const val TAG = "CrimeListFragment"
@@ -77,7 +78,12 @@ class CrimeListFragment : Fragment() {
         fun bind(crime: Crime) {
             this.mCrime = crime
             itemBinding.tvItemCrimeTitle.text = crime.title
-            itemBinding.tvItemCrimeDate.text = crime.date.toString()
+            itemBinding.tvItemCrimeDate.text = DateUtil.getDayAndWeek(crime.date)
+            if (mCrime.isSolved){
+                itemBinding.imgItemCrimeIsSolved.visibility = View.VISIBLE
+            }else{
+                itemBinding.imgItemCrimeIsSolved.visibility = View.GONE
+            }
         }
     }
 
@@ -99,7 +105,7 @@ class CrimeListFragment : Fragment() {
         fun bind(crime: Crime) {
             this.mCrime = crime
             itemPoliceBinding.tvItemCrimeTitle.text = crime.title
-            itemPoliceBinding.tvItemCrimeDate.text = crime.date.toString()
+            itemPoliceBinding.tvItemCrimeDate.text = DateUtil.getDayAndWeek(crime.date)
         }
     }
 
