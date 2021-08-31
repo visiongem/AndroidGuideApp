@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
@@ -25,7 +26,7 @@ class CrimeListFragment : Fragment() {
 
     private var _binding: CrimeListFragmentBinding? = null
     private val mBinding get() = _binding!!
-    private var mAdapter: CrimeAdapter? = null
+    private var mAdapter: CrimeAdapter? = CrimeAdapter(emptyList())
 
     companion object {
         fun newInstance() = CrimeListFragment()
@@ -41,18 +42,25 @@ class CrimeListFragment : Fragment() {
     ): View? {
         _binding = CrimeListFragmentBinding.inflate(layoutInflater, container, false)
         mBinding.recyclerViewCrimes.layoutManager = LinearLayoutManager(context)
-        updateUI()
+        mBinding.recyclerViewCrimes.adapter = mAdapter
         return mBinding.root
     }
 
-    private fun updateUI() {
-        var crimes = crimeListViewModel.crimes
+    private fun updateUI(crimes:List<Crime>) {
         mAdapter = CrimeAdapter(crimes)
         mBinding.recyclerViewCrimes.adapter = mAdapter
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        crimeListViewModel.crimesLiseLiveData.observe(
+            viewLifecycleOwner,
+            Observer { crimes ->
+                crimes?.let{
+                    updateUI(crimes)
+                }
+            }
+        )
     }
 
     override fun onDestroyView() {

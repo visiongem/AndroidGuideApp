@@ -1,5 +1,7 @@
 package com.pyn.criminalintent.bean
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.util.*
 
 /**
@@ -12,8 +14,9 @@ import java.util.*
  * @property requiresPolice 是否需警方介入
  * @constructor Create empty Crime
  */
+@Entity
 data class Crime(
-    val id: UUID = UUID.randomUUID(),
+    @PrimaryKey val id: UUID = UUID.randomUUID(),
     var title: String = "",
     var date: Date = Date(),
     var isSolved: Boolean = false,
