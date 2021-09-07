@@ -1,7 +1,5 @@
 package com.pyn.criminalintent.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.pyn.criminalintent.CrimeRepository
 import com.pyn.criminalintent.bean.Crime
