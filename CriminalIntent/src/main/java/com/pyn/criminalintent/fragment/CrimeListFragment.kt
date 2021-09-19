@@ -1,12 +1,12 @@
 package com.pyn.criminalintent.fragment
 
+import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +16,7 @@ import com.pyn.criminalintent.databinding.ItemCrimeBinding
 import com.pyn.criminalintent.databinding.ItemCrimePoliceBinding
 import com.pyn.criminalintent.utils.DateUtil
 import com.pyn.criminalintent.viewmodel.CrimeListViewModel
+import java.util.*
 
 private const val TAG = "CrimeListFragment"
 
@@ -24,6 +25,7 @@ class CrimeListFragment : Fragment() {
     private var _binding: CrimeListFragmentBinding? = null
     private val mBinding get() = _binding!!
     private var mAdapter: CrimeAdapter? = CrimeAdapter(emptyList())
+    private var callBacks: CallBacks? = null
 
     companion object {
         fun newInstance() = CrimeListFragment()
@@ -43,21 +45,31 @@ class CrimeListFragment : Fragment() {
         return mBinding.root
     }
 
-    private fun updateUI(crimes:List<Crime>) {
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callBacks = context as CallBacks?
+    }
+
+    private fun updateUI(crimes: List<Crime>) {
         mAdapter = CrimeAdapter(crimes)
         mBinding.recyclerViewCrimes.adapter = mAdapter
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        crimeListViewModel.crimesLiseLiveData.observe(
+        crimeListViewModel.crimesListLiveData.observe(
             viewLifecycleOwner,
             Observer { crimes ->
-                crimes?.let{
+                crimes?.let {
                     updateUI(crimes)
                 }
             }
         )
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callBacks = null
     }
 
     override fun onDestroyView() {
@@ -72,11 +84,12 @@ class CrimeListFragment : Fragment() {
 
         init {
             itemBinding.root.setOnClickListener {
-                Toast.makeText(
+                /*Toast.makeText(
                     context,
                     "${mCrime.title} is pressed",
                     Toast.LENGTH_SHORT
-                ).show()
+                ).show()*/
+                callBacks?.onCrimeSelected(mCrime.id)
             }
         }
 
@@ -84,9 +97,9 @@ class CrimeListFragment : Fragment() {
             this.mCrime = crime
             itemBinding.tvItemCrimeTitle.text = crime.title
             itemBinding.tvItemCrimeDate.text = DateUtil.getDayAndWeek(crime.date)
-            if (mCrime.isSolved){
+            if (mCrime.isSolved) {
                 itemBinding.imgItemCrimeIsSolved.visibility = View.VISIBLE
-            }else{
+            } else {
                 itemBinding.imgItemCrimeIsSolved.visibility = View.GONE
             }
         }
@@ -99,11 +112,12 @@ class CrimeListFragment : Fragment() {
 
         init {
             itemPoliceBinding.root.setOnClickListener {
-                Toast.makeText(
+                /*Toast.makeText(
                     context,
                     "${mCrime.title} is pressed",
                     Toast.LENGTH_SHORT
-                ).show()
+                ).show()*/
+                callBacks?.onCrimeSelected(mCrime.id)
             }
         }
 
@@ -120,9 +134,21 @@ class CrimeListFragment : Fragment() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
             return if (viewType == ITEM_TYPE.ITEM_TYPE_POLICE.ordinal) {
-                CrimePoliceHolder(ItemCrimePoliceBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+                CrimePoliceHolder(
+                    ItemCrimePoliceBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
+                )
             } else {
-                CrimeHolder(ItemCrimeBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+                CrimeHolder(
+                    ItemCrimeBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
+                )
             }
 
         }
@@ -140,9 +166,9 @@ class CrimeListFragment : Fragment() {
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val crime = crimes[position]
-            if(holder is CrimeHolder){
+            if (holder is CrimeHolder) {
                 holder.bind(crime)
-            }else if (holder is CrimePoliceHolder){
+            } else if (holder is CrimePoliceHolder) {
                 holder.bind(crime)
             }
         }
@@ -151,6 +177,10 @@ class CrimeListFragment : Fragment() {
     enum class ITEM_TYPE {
         ITEM_TYPE_NOMAL,
         ITEM_TYPE_POLICE
+    }
+
+    interface CallBacks {
+        fun onCrimeSelected(crimeId: UUID)
     }
 
 }
