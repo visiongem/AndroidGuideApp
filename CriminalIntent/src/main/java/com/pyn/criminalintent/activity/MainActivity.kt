@@ -2,11 +2,14 @@ package com.pyn.criminalintent.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.pyn.criminalintent.fragment.CrimeFragment
 import com.pyn.criminalintent.R
+import com.pyn.criminalintent.databinding.ActivityMainBinding
 import com.pyn.criminalintent.fragment.CrimeListFragment
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var mBinding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

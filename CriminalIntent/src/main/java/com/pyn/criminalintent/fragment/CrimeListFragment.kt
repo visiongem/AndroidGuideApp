@@ -10,10 +10,7 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
-import com.pyn.criminalintent.R
 import com.pyn.criminalintent.bean.Crime
-import com.pyn.criminalintent.databinding.CrimeFragmentBinding
 import com.pyn.criminalintent.databinding.CrimeListFragmentBinding
 import com.pyn.criminalintent.databinding.ItemCrimeBinding
 import com.pyn.criminalintent.databinding.ItemCrimePoliceBinding
