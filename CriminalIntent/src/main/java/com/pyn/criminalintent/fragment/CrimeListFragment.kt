@@ -8,7 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.pyn.criminalintent.bean.Crime
 import com.pyn.criminalintent.databinding.CrimeListFragmentBinding
@@ -24,7 +26,7 @@ class CrimeListFragment : Fragment() {
 
     private var _binding: CrimeListFragmentBinding? = null
     private val mBinding get() = _binding!!
-    private var mAdapter: CrimeAdapter? = CrimeAdapter(emptyList())
+    private var mAdapter: CrimeAdapter = CrimeAdapter(emptyList())
     private var callBacks: CallBacks? = null
 
     companion object {
@@ -50,18 +52,14 @@ class CrimeListFragment : Fragment() {
         callBacks = context as CallBacks?
     }
 
-    private fun updateUI(crimes: List<Crime>) {
-        mAdapter = CrimeAdapter(crimes)
-        mBinding.recyclerViewCrimes.adapter = mAdapter
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         crimeListViewModel.crimesListLiveData.observe(
             viewLifecycleOwner,
             Observer { crimes ->
                 crimes?.let {
-                    updateUI(crimes)
+                    mAdapter.crimes = it
+                    mAdapter.submitList(crimes)
                 }
             }
         )
@@ -129,7 +127,7 @@ class CrimeListFragment : Fragment() {
     }
 
     private inner class CrimeAdapter(var crimes: List<Crime>) :
-        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        ListAdapter<Crime, RecyclerView.ViewHolder>(CrimeDiffCallback()) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
@@ -183,4 +181,14 @@ class CrimeListFragment : Fragment() {
         fun onCrimeSelected(crimeId: UUID)
     }
 
+    class CrimeDiffCallback : DiffUtil.ItemCallback<Crime>() {
+
+        override fun areItemsTheSame(oldItem: Crime, newItem: Crime): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Crime, newItem: Crime): Boolean {
+            return oldItem.toString() == newItem.toString()
+        }
+    }
 }
