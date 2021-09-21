@@ -16,8 +16,10 @@ import java.util.*
 
 private const val TAG = "CrimeFragment"
 private const val ARG_CRIME_ID = "crime_id"
+private const val DIALOG_DATE = "dialogDate"
+private const val REQUEST_DATE = 0
 
-class CrimeFragment : Fragment() {
+class CrimeFragment : Fragment(),DatePickerFragment.Callbacks {
 
     private lateinit var mCrime: Crime
 
@@ -59,19 +61,22 @@ class CrimeFragment : Fragment() {
         crimeDetailViewModel.crimeLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             it?.let {
                 this.mCrime = it
-                updateUI(it)
+                updateUI()
             }
         })
+        mBinding.btnCrimeDate.setOnClickListener {
+            DatePickerFragment.newInstance(mCrime.date).apply {
+                setTargetFragment(this@CrimeFragment, REQUEST_DATE)
+                show(this@CrimeFragment.parentFragmentManager, DIALOG_DATE)
+            }
+        }
     }
 
-    private fun updateUI(crime:Crime) {
-        mBinding.edtCrimeTitle.setText(crime.title)
-        mBinding.btnCrimeDate.apply {
-            text = crime.date.toString()
-            isEnabled = false
-        }
+    private fun updateUI() {
+        mBinding.edtCrimeTitle.setText(mCrime.title)
+        mBinding.btnCrimeDate.text = mCrime.date.toString()
         mBinding.cboxCrimeSolved.apply {
-            isChecked = crime.isSolved
+            isChecked = mCrime.isSolved
             jumpDrawablesToCurrentState()
         }
     }
@@ -105,6 +110,11 @@ class CrimeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onDateSelected(date: Date) {
+        mCrime.date = date
+        updateUI()
     }
 
 }
