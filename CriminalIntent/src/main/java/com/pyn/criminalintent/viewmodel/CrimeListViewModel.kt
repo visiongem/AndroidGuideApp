@@ -11,7 +11,7 @@ class CrimeListViewModel : ViewModel() {
     private val crimeRepository = CrimeRepository.get()
     val crimesListLiveData = crimeRepository.getCrimes()
 
-    init {
+    /*init {
         for (i in 0 until 20) {
             val crime = Crime()
             crime.title = "Crime #$i"
@@ -19,5 +19,9 @@ class CrimeListViewModel : ViewModel() {
             crime.requiresPolice = i % 2 == 0
             crimeRepository.insertCrimes(crime)
         }
+    }*/
+
+    fun addCrime(crime: Crime) {
+        crimeRepository.insertCrimes(crime)
     }
 }

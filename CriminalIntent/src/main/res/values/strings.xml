@@ -4,4 +4,7 @@
     <string name="crime_title_label">Title</string>
     <string name="crime_details_label">Details</string>
     <string name="crime_solved_label">Solved</string>
+    <string name="new_crime">New Crime</string>
+    <string name="some_cool_title">CoolTitle</string>
+    <string name="text_empty_view">There are no crime</string>
 </resources>
