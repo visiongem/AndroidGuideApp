@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.pyn.criminalintent.bean.Crime
 import com.pyn.criminalintent.database.CrimeDatabase
+import com.pyn.criminalintent.database.migration_1_2
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
@@ -19,7 +20,7 @@ class CrimeRepository private constructor(context: Context) {
         context.applicationContext,
         CrimeDatabase::class.java,
         DATABASE_NAME
-    ).build()
+    ).addMigrations(migration_1_2).build()
 
     private val executor = Executors.newSingleThreadExecutor()
 

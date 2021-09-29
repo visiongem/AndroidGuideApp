@@ -12,6 +12,7 @@ import java.util.*
  * @property date 日期
  * @property isSolved 是否解决
  * @property requiresPolice 是否需警方介入
+ * @property suspect 嫌疑人名字
  * @constructor Create empty Crime
  */
 @Entity
@@ -20,5 +21,6 @@ data class Crime(
     var title: String = "",
     var date: Date = Date(),
     var isSolved: Boolean = false,
-    var requiresPolice: Boolean = false
+    var requiresPolice: Boolean = false,
+    var suspect: String = ""
 )
