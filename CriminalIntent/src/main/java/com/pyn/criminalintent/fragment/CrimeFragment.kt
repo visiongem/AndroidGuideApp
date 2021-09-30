@@ -156,6 +156,10 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
                 isEnabled = false
             }
         }
+
+        mBinding.btnCallSuspect.setOnClickListener {
+
+        }
     }
 
     override fun onStop() {
