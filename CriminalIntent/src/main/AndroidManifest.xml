@@ -4,6 +4,10 @@
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <application
         android:name=".CriminalIntentApplication"
         android:allowBackup="true"

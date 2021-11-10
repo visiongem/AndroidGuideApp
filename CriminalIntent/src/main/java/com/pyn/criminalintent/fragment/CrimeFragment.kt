@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.pyn.criminalintent.R
 import com.pyn.criminalintent.bean.Crime
 import com.pyn.criminalintent.databinding.CrimeFragmentBinding
+import com.pyn.criminalintent.utils.PictureUtil
 import com.pyn.criminalintent.viewmodel.CrimeDetailViewModel
 import java.util.*
 
@@ -113,6 +114,16 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
         if (mCrime.suspect.isNotEmpty()) {
             mBinding.btnCrimeSuspect.text = mCrime.suspect
         }
+        updatePhotoView()
+    }
+
+    private fun updatePhotoView(){
+        if(photoFile.exists()){
+            val bitmap = PictureUtil.getScaledBitmap(photoFile.path, requireActivity())
+            photoView.serImageBitmap(bitmap)
+        }else{
+            photoView.setImageDrawable(null)
+        }
     }
 
     override fun onStart() {
@@ -160,6 +171,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
         mBinding.btnCallSuspect.setOnClickListener {
             // TODO:
         }
+
     }
 
     override fun onStop() {
@@ -198,6 +210,11 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
             solvedStr,
             suspect
         )
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        requireActivity().revokeUriPermission(photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
     }
 
 }
