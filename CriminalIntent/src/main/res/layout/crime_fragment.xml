@@ -6,17 +6,40 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        style="?android:listSeparatorTextViewStyle"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/crime_title_label" />
+        android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/edt_crime_title"
-        android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/img_crime_photo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@android:color/darker_gray"
+            android:cropToPadding="true"
+            android:scaleType="centerInside" />
+
+        <TextView
+            style="?android:listSeparatorTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="120dp"
+            android:text="@string/crime_title_label" />
+
+        <EditText
+            android:id="@+id/edt_crime_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="120dp"
+            android:layout_marginTop="50dp"
+            android:hint="@string/crime_title_hint" />
+    </FrameLayout>
+
+    <ImageButton
+        android:id="@+id/ibtn_crime_camera"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="@string/crime_title_hint" />
+        android:padding="8dp"
+        android:src="@android:drawable/ic_menu_camera" />
 
     <TextView
         style="?android:listSeparatorTextViewStyle"

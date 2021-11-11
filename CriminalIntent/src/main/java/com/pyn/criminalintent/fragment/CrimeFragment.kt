@@ -8,6 +8,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -16,11 +17,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
+import androidx.fragment.app.DialogFragment
 import com.pyn.criminalintent.R
 import com.pyn.criminalintent.bean.Crime
 import com.pyn.criminalintent.databinding.CrimeFragmentBinding
 import com.pyn.criminalintent.utils.PictureUtil
 import com.pyn.criminalintent.viewmodel.CrimeDetailViewModel
+import java.io.File
 import java.util.*
 
 private const val TAG = "CrimeFragment"
@@ -32,6 +36,10 @@ private const val DATE_FORMAT = "EEE, MMM, dd"
 class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
 
     private lateinit var mCrime: Crime
+    private lateinit var photoFile: File
+    private lateinit var photoUri: Uri
+    private var imgPhotoWidth: Int = 0
+    private var imgPhotoHeight: Int = 0
 
     // fragment 的生命周期与 activity 的生命周期不同，并且该fragment 可以超出其视图的生命周期，因此如果不将其设置为null，则可能会发生内存泄漏。
     // 另一个变量通过 !! 使一个变量为可空值而使另一个变量为非空值避免了空检查。
@@ -60,6 +68,13 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
                     crimeDetailViewModel.saveCrime(mCrime)
                     mBinding.btnCrimeSuspect.text = suspect
                 }
+            }
+        }
+
+    private val startForResult2 =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                updatePhotoView(imgPhotoWidth, imgPhotoHeight)
             }
         }
 
@@ -93,6 +108,12 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
         crimeDetailViewModel.crimeLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             it?.let {
                 this.mCrime = it
+                photoFile = crimeDetailViewModel.getPhotoFile(it)
+                photoUri = FileProvider.getUriForFile(
+                    requireActivity(),
+                    "com.pyn.criminalintent.fileprovider",
+                    photoFile
+                )
                 updateUI()
             }
         })
@@ -114,15 +135,15 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
         if (mCrime.suspect.isNotEmpty()) {
             mBinding.btnCrimeSuspect.text = mCrime.suspect
         }
-        updatePhotoView()
+        updatePhotoView(imgPhotoWidth, imgPhotoHeight)
     }
 
-    private fun updatePhotoView(){
-        if(photoFile.exists()){
-            val bitmap = PictureUtil.getScaledBitmap(photoFile.path, requireActivity())
-            photoView.serImageBitmap(bitmap)
-        }else{
-            photoView.setImageDrawable(null)
+    private fun updatePhotoView(width: Int, height: Int) {
+        if (photoFile.exists()) {
+            val bitmap = PictureUtil.getScaledBitmap(photoFile.path, width, height)
+            mBinding.imgCrimePhoto.setImageBitmap(bitmap)
+        } else {
+            mBinding.imgCrimePhoto.setImageDrawable(null)
         }
     }
 
@@ -172,8 +193,45 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
             // TODO:
         }
 
-    }
+        mBinding.ibtnCrimeCamera.apply {
+            val packageManager: PackageManager = requireActivity().packageManager
+            val captureImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            val resolvedActivity: ResolveInfo? = packageManager.resolveActivity(
+                captureImageIntent,
+                PackageManager.MATCH_DEFAULT_ONLY
+            )
+            if (resolvedActivity == null) {
+                isEnabled = false
+            }
+            setOnClickListener {
+                captureImageIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                val cameraActivities: List<ResolveInfo> = packageManager.queryIntentActivities(
+                    captureImageIntent,
+                    PackageManager.MATCH_DEFAULT_ONLY
+                )
+                for (cameraActivity in cameraActivities) {
+                    requireActivity().grantUriPermission(
+                        cameraActivity.activityInfo.packageName,
+                        photoUri,
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    )
+                }
+                startForResult2.launch(captureImageIntent)
+            }
+        }
 
+        mBinding.imgCrimePhoto.viewTreeObserver.addOnGlobalLayoutListener {
+            imgPhotoWidth = mBinding.imgCrimePhoto.measuredWidth
+            imgPhotoHeight = mBinding.imgCrimePhoto.measuredHeight
+        }
+
+        // 缩略图放大功能
+        mBinding.imgCrimePhoto.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("img_path",photoFile.path)
+            PhotoPreviewDialogFragment().newInstance(bundle).show(this@CrimeFragment.parentFragmentManager, "PreviewPhotoDialog")
+        }
+    }
     override fun onStop() {
         super.onStop()
         crimeDetailViewModel.saveCrime(mCrime)

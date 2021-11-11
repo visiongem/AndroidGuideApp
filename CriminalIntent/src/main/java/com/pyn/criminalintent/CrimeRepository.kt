@@ -8,6 +8,7 @@ import com.pyn.criminalintent.database.CrimeDatabase
 import com.pyn.criminalintent.database.migration_1_2
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.File
 import java.lang.IllegalStateException
 import java.util.*
 import java.util.concurrent.Executors
@@ -23,6 +24,7 @@ class CrimeRepository private constructor(context: Context) {
     ).addMigrations(migration_1_2).build()
 
     private val executor = Executors.newSingleThreadExecutor()
+    private val filesDir = context.applicationContext.filesDir
 
     private val crimeDao = database.crimeDao()
 
@@ -55,4 +57,9 @@ class CrimeRepository private constructor(context: Context) {
             return INSTANCE ?: throw IllegalStateException("CrimeRepository must be initialized")
         }
     }
+
+    /**
+     * 返回指向某个具体位置的File对象
+     */
+    fun getPhotoFile(crime: Crime) : File = File(filesDir,crime.photoFileName)
 }
