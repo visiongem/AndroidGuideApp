@@ -15,6 +15,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:background="@android:color/darker_gray"
+            android:contentDescription="@string/crime_photo_no_image"
             android:cropToPadding="true"
             android:scaleType="centerInside" />
 
@@ -46,6 +47,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/crime_details_label" />
+
+    <TextView
+        android:id="@+id/tv_crime_date_lable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:labelFor="@id/btn_crime_date"
+        tools:text="Date"
+        android:contentDescription="@string/crime_date" />
 
     <Button
         android:id="@+id/btn_crime_date"

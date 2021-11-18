@@ -17,4 +17,10 @@
     <string name="crime_report_subject">crime 处理情况报告</string>
     <string name="send_report">发送报告</string>
     <string name="call_suspect">拨打嫌疑人电话</string>
+    <string name="crime_photo_btn_des">陋习现场拍照按钮</string>
+    <string name="crime_photo_no_image">陋习现场照片(未拍照)</string>
+    <string name="crime_photo_image_description">陋习现场照片(已拍照)</string>
+    <string name="crime_is_solved">是否解决</string>
+    <string name="crime_date">陋习时间</string>
+
 </resources>
