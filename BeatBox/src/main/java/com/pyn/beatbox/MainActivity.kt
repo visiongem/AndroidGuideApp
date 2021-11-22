@@ -61,4 +61,9 @@ class MainActivity : AppCompatActivity() {
         }
         override fun getItemCount() = sounds.size
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        beatBox.release()
+    }
 }
