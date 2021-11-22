@@ -6,7 +6,11 @@ import androidx.databinding.Bindable
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.MutableLiveData
 
-class SoundViewModel /*: BaseObservable() */{
+class SoundViewModel(private val beatBox: BeatBox) /*: BaseObservable() */{
+
+    fun onButtonClicked() {
+        sound?.let { beatBox.play(it) }
+    }
 
     val title :MutableLiveData<String?> = MutableLiveData()
 
