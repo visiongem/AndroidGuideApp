@@ -2,11 +2,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
+    <!--<data>
         <variable
             name="viewModel"
             type="com.pyn.beatbox.SoundViewModel" />
-    </data>
+    </data>-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,14 +25,12 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textSize="16sp"
-            android:text="@{viewModel.progress}"
             tools:text="Playback Speed 0%" />
 
         <SeekBar
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onProgressChanged="@{()->viewModel.onProgressChanged()}"
             android:layout_marginBottom="10dp" />
     </LinearLayout>
 </layout>
