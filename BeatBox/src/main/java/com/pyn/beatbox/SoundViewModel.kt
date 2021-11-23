@@ -6,13 +6,18 @@ import androidx.databinding.Bindable
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.MutableLiveData
 
-class SoundViewModel(private val beatBox: BeatBox) /*: BaseObservable() */{
+class SoundViewModel(private val beatBox: BeatBox) /*: BaseObservable() */ {
 
     fun onButtonClicked() {
         sound?.let { beatBox.play(it) }
     }
 
-    val title :MutableLiveData<String?> = MutableLiveData()
+    fun onProgressChanged(){
+
+    }
+
+    val title: MutableLiveData<String?> = MutableLiveData()
+    val progress: MutableLiveData<Int?> = MutableLiveData()
 
     var sound: Sound? = null
         set(sound) {
@@ -21,9 +26,9 @@ class SoundViewModel(private val beatBox: BeatBox) /*: BaseObservable() */{
             title.postValue(sound?.name)
         }
 
-   /* @get:Bindable
-    val title: String?
-        get() = sound?.name*/
+    /* @get:Bindable
+     val title: String?
+         get() = sound?.name*/
 }
 
 @BindingAdapter("app:isGone")
