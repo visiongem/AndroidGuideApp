@@ -2,3 +2,4 @@ include ':GeoQuiz'
 rootProject.name = "AndroidGuideApp"
 include ':CriminalIntent'
 include ':BeatBox'
+include ':NerdLauncher'
