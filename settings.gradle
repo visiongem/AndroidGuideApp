@@ -3,3 +3,4 @@ rootProject.name = "AndroidGuideApp"
 include ':CriminalIntent'
 include ':BeatBox'
 include ':NerdLauncher'
+include ':PhotoGallery'
