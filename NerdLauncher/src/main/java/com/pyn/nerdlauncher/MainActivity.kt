@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.pyn.nerdlauncher.databinding.ActivityMainBinding
@@ -82,12 +83,16 @@ class MainActivity : AppCompatActivity() {
             val packageManager = itemView.context.packageManager
             val appName = resolveInfo.loadLabel(packageManager).toString()
             tvName.text = appName
+            val appIcon = resolveInfo.loadIcon(packageManager)
+            appIcon.setBounds(0, 0, appIcon.minimumWidth, appIcon.minimumHeight)
+            tvName.setCompoundDrawables(appIcon, null, null, null)
         }
 
         override fun onClick(v: View) {
             val activityInfo = resolveInfo.activityInfo
             val intent = Intent(Intent.ACTION_MAIN).apply {
                 setClassName(activityInfo.applicationInfo.packageName, activityInfo.name)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             val context = v.context
             context.startActivity(intent)
