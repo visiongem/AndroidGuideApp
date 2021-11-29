@@ -2,7 +2,11 @@ package com.pyn.photogallery
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.pyn.photogallery.api.FlickrApi
 import com.pyn.photogallery.databinding.ActivityMainBinding
+import retrofit2.Retrofit
+import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory.create
 
 class MainActivity : AppCompatActivity() {
 
