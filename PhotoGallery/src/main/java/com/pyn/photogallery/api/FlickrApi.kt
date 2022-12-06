@@ -1,7 +1,7 @@
 package com.pyn.photogallery.api
 
 import com.pyn.photogallery.FlickrConstants
-import com.pyn.photogallery.FlickrResponse
+import com.pyn.photogallery.bean.FlickrResponse
 import retrofit2.Call
 import retrofit2.http.GET
 

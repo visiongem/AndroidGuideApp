@@ -1,6 +1,4 @@
-package com.pyn.photogallery
-
-import com.pyn.photogallery.bean.PhotoResponse
+package com.pyn.photogallery.bean
 
 /**
  * Description：
@@ -9,5 +7,10 @@ import com.pyn.photogallery.bean.PhotoResponse
  * @time   2022/12/5 18:03
  */
 class FlickrResponse {
+
     lateinit var photos: PhotoResponse
+
+    override fun toString(): String {
+        return "FlickrResponse(photos=$photos)"
+    }
 }

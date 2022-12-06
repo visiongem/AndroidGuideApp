@@ -1,12 +1,12 @@
-package com.pyn.photogallery
+package com.pyn.photogallery.net
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
 import com.pyn.photogallery.api.FlickrApi
+import com.pyn.photogallery.bean.FlickrResponse
 import com.pyn.photogallery.bean.GalleryItem
-import com.pyn.photogallery.bean.PhotoBean
 import com.pyn.photogallery.bean.PhotoResponse
 import retrofit2.Call
 import retrofit2.Callback
