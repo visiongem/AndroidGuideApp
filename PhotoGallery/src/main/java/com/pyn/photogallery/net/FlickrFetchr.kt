@@ -8,6 +8,8 @@ import com.pyn.photogallery.api.FlickrApi
 import com.pyn.photogallery.bean.FlickrResponse
 import com.pyn.photogallery.bean.GalleryItem
 import com.pyn.photogallery.bean.PhotoResponse
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,7 +23,12 @@ class FlickrFetchr {
     private val flickrApi: FlickrApi
 
     init {
+        val httpClientBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
+        httpClientBuilder
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+
         val retrofit = Retrofit.Builder()
+            .client(httpClientBuilder.build())
             .baseUrl("https://www.flickr.com/")
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
             .build()
@@ -35,6 +42,7 @@ class FlickrFetchr {
         flickrHomePageRequest.enqueue(object : Callback<FlickrResponse> {
             override fun onResponse(call: Call<FlickrResponse>, response: Response<FlickrResponse>) {
                 Log.d(TAG, "Response received : ${response.body()}")
+
                 val flickrResponse: FlickrResponse? = response.body()
                 val photoResponse: PhotoResponse? = flickrResponse?.photos
                 var galleryItems: List<GalleryItem> = photoResponse?.galleryItems ?: mutableListOf()
@@ -44,6 +52,7 @@ class FlickrFetchr {
 
             override fun onFailure(call: Call<FlickrResponse>, t: Throwable) {
                 Log.e(TAG, "Failed to fetch photos", t)
+                Log.e(TAG, t.toString())
             }
         })
         return responseLiveData

@@ -5,33 +5,35 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.pyn.photogallery.base.BaseBindingQuickAdapter
 import com.pyn.photogallery.bean.GalleryItem
-import com.pyn.photogallery.net.FlickrFetchr
+import com.pyn.photogallery.databinding.FragmentPhotoGalleryBinding
+import com.pyn.photogallery.databinding.ItemPhotoBinding
 
 private const val TAG = "PhotoGalleryFragment"
 
 class PhotoGalleryFragment : Fragment() {
 
-    private lateinit var photoRecyclerView: RecyclerView
-//    private val viewModel: PhotoGalleryViewModel by viewModels()
-    private lateinit var viewModel:PhotoGalleryViewModel
+    private var _binding: FragmentPhotoGalleryBinding? = null
+    private val mBinding get() = _binding!!
+    private lateinit var adapter: PhotoAdapter
+
+    //    private val viewModel: PhotoGalleryViewModel by viewModels()
+    private lateinit var viewModel: PhotoGalleryViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
-        photoRecyclerView = view.findViewById(R.id.recyclerview_photo)
-        photoRecyclerView.layoutManager = GridLayoutManager(context, 3)
-        return super.onCreateView(inflater, container, savedInstanceState)
+    ): View {
+        adapter = PhotoAdapter()
+        _binding = FragmentPhotoGalleryBinding.inflate(layoutInflater, container, false)
+        mBinding.recyclerviewPhoto.layoutManager = LinearLayoutManager(context)
+        mBinding.recyclerviewPhoto.adapter = adapter
+        return mBinding.root
     }
 
     companion object {
@@ -42,28 +44,26 @@ class PhotoGalleryFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         viewModel = ViewModelProvider(this)[PhotoGalleryViewModel::class.java]
-        val flickrLiveData: LiveData<List<GalleryItem>> = FlickrFetchr().fetchPhotos()
-        flickrLiveData.observe(this,
-            Observer { gallerayItems ->
-                Log.d(TAG, "Response received:$gallerayItems")
-                photoRecyclerView.adapter = PhotoAdapter(gallerayItems)
-            })
+        /*val flickrLiveData: LiveData<List<GalleryItem>> = FlickrFetchr().fetchPhotos()
+        flickrLiveData.observe(this) { gallerayItems ->
+            Log.d(TAG, "Response received:$gallerayItems")
+        }*/
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.galleryItemLiveData.observe(viewLifecycleOwner,
-            Observer { gallerayItems ->
-                Log.d(TAG, "Response received:$gallerayItems")
-                photoRecyclerView.adapter = PhotoAdapter(gallerayItems)
-            })
+        viewModel.galleryItemLiveData.observe(viewLifecycleOwner) {
+            Log.d(TAG, "Response received:$it")
+            adapter.setList(it)
+        }
     }
 
-    private class PhotoHolder(itemTextView: TextView) : RecyclerView.ViewHolder(itemTextView) {
+/*    private class PhotoHolder(itemTextView: TextView) : RecyclerView.ViewHolder(itemTextView) {
         val bindTitle: (CharSequence) -> Unit = itemTextView::setText
     }
 
     private class PhotoAdapter(private val galleryItems: List<GalleryItem>) : RecyclerView.Adapter<PhotoHolder>() {
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoHolder {
             val textView = TextView(parent.context)
             return PhotoHolder(textView)
@@ -77,6 +77,19 @@ class PhotoGalleryFragment : Fragment() {
         override fun getItemCount(): Int {
             return galleryItems.size
         }
+    }*/
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
+    inner class PhotoAdapter : BaseBindingQuickAdapter<GalleryItem, ItemPhotoBinding>() {
+
+        override fun convert(holder: BaseBindingHolder, item: GalleryItem) {
+            with(holder.getViewBinding<ItemPhotoBinding>()) {
+                tvTitle.text = item.title
+            }
+        }
+    }
 }
