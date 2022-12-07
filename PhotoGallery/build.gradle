@@ -55,6 +55,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
     // 一个强大并且灵活的RecyclerViewAdapter「https://github.com/CymChad/BaseRecyclerViewAdapterHelper」
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.10'
+    implementation 'com.squareup.moshi:moshi-kotlin:1.12.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

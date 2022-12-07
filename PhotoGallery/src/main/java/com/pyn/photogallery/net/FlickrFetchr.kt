@@ -8,6 +8,8 @@ import com.pyn.photogallery.api.FlickrApi
 import com.pyn.photogallery.bean.FlickrResponse
 import com.pyn.photogallery.bean.GalleryItem
 import com.pyn.photogallery.bean.PhotoResponse
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -15,6 +17,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 private const val TAG = "FlickrFetchr"
 
@@ -31,6 +34,7 @@ class FlickrFetchr {
             .client(httpClientBuilder.build())
             .baseUrl("https://www.flickr.com/")
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
+            .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()))
             .build()
         flickrApi = retrofit.create(FlickrApi::class.java)
     }
@@ -38,6 +42,9 @@ class FlickrFetchr {
     fun fetchPhotos(): LiveData<List<GalleryItem>> {
         val responseLiveData: MutableLiveData<List<GalleryItem>> = MutableLiveData()
         val flickrHomePageRequest: Call<FlickrResponse> = flickrApi.fetchPhotos()
+
+        val repository = Repository()
+        repository.addFlickrCall(flickrHomePageRequest)
 
         flickrHomePageRequest.enqueue(object : Callback<FlickrResponse> {
             override fun onResponse(call: Call<FlickrResponse>, response: Response<FlickrResponse>) {
@@ -52,7 +59,9 @@ class FlickrFetchr {
 
             override fun onFailure(call: Call<FlickrResponse>, t: Throwable) {
                 Log.e(TAG, "Failed to fetch photos", t)
-                Log.e(TAG, t.toString())
+                if (call.isCanceled){
+                    Log.e(TAG, "request Canceled")
+                }
             }
         })
         return responseLiveData

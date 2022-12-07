@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.pyn.photogallery.bean.GalleryItem
 import com.pyn.photogallery.net.FlickrFetchr
+import com.pyn.photogallery.net.Repository
 
 /**
  * Description：
@@ -13,6 +14,13 @@ import com.pyn.photogallery.net.FlickrFetchr
  */
 class PhotoGalleryViewModel : ViewModel() {
 
+    private val repository = Repository()
+
     val galleryItemLiveData: LiveData<List<GalleryItem>> = FlickrFetchr().fetchPhotos()
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.cancelRequestInFlight()
+    }
 
 }
