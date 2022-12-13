@@ -2,6 +2,7 @@ package com.pyn.photogallery.api
 
 import com.pyn.photogallery.FlickrConstants
 import com.pyn.photogallery.bean.FlickrResponse
+import com.pyn.photogallery.bean.PhotoDeserializer
 import retrofit2.Call
 import retrofit2.http.GET
 
@@ -16,5 +17,5 @@ interface FlickrApi {
                 + "&format=json&nojsoncallback=1"
                 + "&extras=url_s"
     )
-    fun fetchPhotos(): Call<FlickrResponse>
+    fun fetchPhotos(): Call<PhotoDeserializer>
 }
