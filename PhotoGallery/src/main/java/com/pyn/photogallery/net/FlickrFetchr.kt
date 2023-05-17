@@ -1,6 +1,10 @@
 package com.pyn.photogallery.net
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.BitmapFactory.decodeStream
 import android.util.Log
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
@@ -9,6 +13,7 @@ import com.pyn.photogallery.bean.GalleryItem
 import com.pyn.photogallery.bean.PhotoDeserializer
 import com.pyn.photogallery.bean.PhotoResponse
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
@@ -115,5 +120,13 @@ class FlickrFetchr {
             }
         })
         return responseLiveData
+    }
+
+    @WorkerThread
+    fun fetchPhoto(url:String):Bitmap?{
+        val response:Response<ResponseBody> = flickrApi.fetchUrlBytes(url).execute()
+        val bitmap = response.body()?.byteStream()?.use(BitmapFactory::decodeStream)
+        Log.i(TAG, "Decoded bitmap = $bitmap from Response = $response")
+        return bitmap
     }
 }

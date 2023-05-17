@@ -8,10 +8,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.chad.library.adapter.base.module.LoadMoreModule
 import com.pyn.photogallery.base.BaseBindingQuickAdapter
 import com.pyn.photogallery.bean.GalleryItem
 import com.pyn.photogallery.databinding.FragmentPhotoGalleryBinding
 import com.pyn.photogallery.databinding.ItemPhotoBinding
+import com.pyn.photogallery.databinding.ListItemGalleryBinding
+import com.pyn.photogallery.net.ThumbnailDownloader
 
 private const val TAG = "PhotoGalleryFragment"
 
@@ -23,6 +26,13 @@ class PhotoGalleryFragment : Fragment() {
 
     //    private val viewModel: PhotoGalleryViewModel by viewModels()
     private lateinit var viewModel: PhotoGalleryViewModel
+    lateinit var thumbnailDownloader: ThumbnailDownloader<BaseBindingQuickAdapter.BaseBindingHolder>
+
+    // 当前请求页面
+    private var currentPage = 1
+
+    // 每次请求条数
+    private val limit = 10
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,8 +52,10 @@ class PhotoGalleryFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        retainInstance = true
         viewModel = ViewModelProvider(this)[PhotoGalleryViewModel::class.java]
+        thumbnailDownloader = ThumbnailDownloader()
+        lifecycle.addObserver(thumbnailDownloader)
         /*val flickrLiveData: LiveData<List<GalleryItem>> = FlickrFetchr().fetchPhotos()
         flickrLiveData.observe(this) { gallerayItems ->
             Log.d(TAG, "Response received:$gallerayItems")
@@ -82,13 +94,25 @@ class PhotoGalleryFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        lifecycle.removeObserver(thumbnailDownloader)
     }
 
-    inner class PhotoAdapter : BaseBindingQuickAdapter<GalleryItem, ItemPhotoBinding>() {
+/*    inner class PhotoAdapter : BaseBindingQuickAdapter<GalleryItem, ItemPhotoBinding>() {
 
         override fun convert(holder: BaseBindingHolder, item: GalleryItem) {
             with(holder.getViewBinding<ItemPhotoBinding>()) {
                 tvTitle.text = item.title
+            }
+        }
+    }*/
+
+    inner class PhotoAdapter : BaseBindingQuickAdapter<GalleryItem, ListItemGalleryBinding>(),
+        LoadMoreModule {
+
+        override fun convert(holder: BaseBindingHolder, item: GalleryItem) {
+            this@PhotoGalleryFragment.thumbnailDownloader.queueThumbnail(holder, item.url)
+            with(holder.getViewBinding<ListItemGalleryBinding>()) {
+                this.root.setImageDrawable(context.getDrawable(R.drawable.mio))
             }
         }
     }
