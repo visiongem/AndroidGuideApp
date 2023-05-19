@@ -1,6 +1,8 @@
 package com.pyn.photogallery
 
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +14,6 @@ import com.chad.library.adapter.base.module.LoadMoreModule
 import com.pyn.photogallery.base.BaseBindingQuickAdapter
 import com.pyn.photogallery.bean.GalleryItem
 import com.pyn.photogallery.databinding.FragmentPhotoGalleryBinding
-import com.pyn.photogallery.databinding.ItemPhotoBinding
 import com.pyn.photogallery.databinding.ListItemGalleryBinding
 import com.pyn.photogallery.net.ThumbnailDownloader
 
@@ -27,6 +28,7 @@ class PhotoGalleryFragment : Fragment() {
     //    private val viewModel: PhotoGalleryViewModel by viewModels()
     private lateinit var viewModel: PhotoGalleryViewModel
     lateinit var thumbnailDownloader: ThumbnailDownloader<BaseBindingQuickAdapter.BaseBindingHolder>
+
 
     // 当前请求页面
     private var currentPage = 1
@@ -54,7 +56,8 @@ class PhotoGalleryFragment : Fragment() {
         super.onCreate(savedInstanceState)
         retainInstance = true
         viewModel = ViewModelProvider(this)[PhotoGalleryViewModel::class.java]
-        thumbnailDownloader = ThumbnailDownloader()
+        val responseHandler = Handler()
+        thumbnailDownloader = ThumbnailDownloader(responseHandler)
         lifecycle.addObserver(thumbnailDownloader)
         /*val flickrLiveData: LiveData<List<GalleryItem>> = FlickrFetchr().fetchPhotos()
         flickrLiveData.observe(this) { gallerayItems ->
@@ -110,6 +113,11 @@ class PhotoGalleryFragment : Fragment() {
         LoadMoreModule {
 
         override fun convert(holder: BaseBindingHolder, item: GalleryItem) {
+            this@PhotoGalleryFragment.thumbnailDownloader.setThumbnailDownloader { holder, bitmap->
+                with(holder.getViewBinding<ListItemGalleryBinding>()) {
+                    this.root.setImageBitmap(bitmap)
+                }
+            }
             this@PhotoGalleryFragment.thumbnailDownloader.queueThumbnail(holder, item.url)
             with(holder.getViewBinding<ListItemGalleryBinding>()) {
                 this.root.setImageDrawable(context.getDrawable(R.drawable.mio))

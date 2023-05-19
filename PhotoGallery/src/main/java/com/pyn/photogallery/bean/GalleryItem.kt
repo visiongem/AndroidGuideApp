@@ -1,5 +1,6 @@
 package com.pyn.photogallery.bean
 
+import android.graphics.Bitmap
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -9,8 +10,8 @@ import com.google.gson.annotations.SerializedName
  * @time   2022/12/5 17:00
  */
 data class GalleryItem(
-    var title:String="",
-    var id:String = "",
+    var title: String = "",
+    var id: String = "",
     @SerializedName("url_s")
-    var url:String=""
+    var url: String = "",
 )
