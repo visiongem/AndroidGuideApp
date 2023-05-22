@@ -1,6 +1,5 @@
 package com.pyn.photogallery
 
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -9,20 +8,24 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
 import com.chad.library.adapter.base.module.LoadMoreModule
 import com.pyn.photogallery.base.BaseBindingQuickAdapter
 import com.pyn.photogallery.bean.GalleryItem
 import com.pyn.photogallery.databinding.FragmentPhotoGalleryBinding
 import com.pyn.photogallery.databinding.ListItemGalleryBinding
 import com.pyn.photogallery.net.ThumbnailDownloader
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val TAG = "PhotoGalleryFragment"
 
 class PhotoGalleryFragment : Fragment() {
 
     private var _binding: FragmentPhotoGalleryBinding? = null
-    private val mBinding get() = _binding!!
+    private val binding get() = _binding!!
     private lateinit var adapter: PhotoAdapter
 
     //    private val viewModel: PhotoGalleryViewModel by viewModels()
@@ -43,9 +46,9 @@ class PhotoGalleryFragment : Fragment() {
     ): View {
         adapter = PhotoAdapter()
         _binding = FragmentPhotoGalleryBinding.inflate(layoutInflater, container, false)
-        mBinding.recyclerviewPhoto.layoutManager = LinearLayoutManager(context)
-        mBinding.recyclerviewPhoto.adapter = adapter
-        return mBinding.root
+        binding.recyclerviewPhoto.layoutManager = LinearLayoutManager(context)
+        binding.recyclerviewPhoto.adapter = adapter
+        return binding.root
     }
 
     companion object {
@@ -70,7 +73,17 @@ class PhotoGalleryFragment : Fragment() {
         viewLifecycleOwner.lifecycle.addObserver(thumbnailDownloader.viewLifecycleObserver)
         viewModel.galleryItemLiveData.observe(viewLifecycleOwner) {
             Log.d(TAG, "Response received:$it")
+            binding.swipeRefreshLayout.isRefreshing = false
             adapter.setList(it)
+        }
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            lifecycleScope.launch {
+                if (binding.swipeRefreshLayout.isRefreshing){
+                    delay(3000)
+                    binding.swipeRefreshLayout.isRefreshing = false
+                }
+            }
+
         }
     }
 
@@ -119,7 +132,14 @@ class PhotoGalleryFragment : Fragment() {
         LoadMoreModule {
 
         override fun convert(holder: BaseBindingHolder, item: GalleryItem) {
-            this@PhotoGalleryFragment.thumbnailDownloader.setThumbnailDownloader { holder, bitmap->
+
+            with(holder.getViewBinding<ListItemGalleryBinding>()) {
+                this.root.load(item.url){
+                    placeholder(R.drawable.mio)
+                }
+            }
+
+            /*this@PhotoGalleryFragment.thumbnailDownloader.setThumbnailDownloader { holder, bitmap->
                 with(holder.getViewBinding<ListItemGalleryBinding>()) {
                     this.root.setImageBitmap(bitmap)
                 }
@@ -127,7 +147,7 @@ class PhotoGalleryFragment : Fragment() {
             this@PhotoGalleryFragment.thumbnailDownloader.queueThumbnail(holder, item.url)
             with(holder.getViewBinding<ListItemGalleryBinding>()) {
                 this.root.setImageDrawable(context.getDrawable(R.drawable.mio))
-            }
+            }*/
         }
     }
 }

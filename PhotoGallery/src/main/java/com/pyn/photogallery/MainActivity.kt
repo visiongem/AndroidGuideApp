@@ -2,11 +2,8 @@ package com.pyn.photogallery
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.pyn.photogallery.api.FlickrApi
+import android.os.StrictMode
 import com.pyn.photogallery.databinding.ActivityMainBinding
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory.create
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,6 +11,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        StrictMode.enableDefaults()
+
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mBinding.root)
 

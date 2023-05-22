@@ -5,7 +5,6 @@ plugins {
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId "com.pyn.androidguide"
@@ -33,6 +32,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+    namespace 'com.pyn.androidguide'
 }
 
 dependencies {
