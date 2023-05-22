@@ -58,7 +58,7 @@ class PhotoGalleryFragment : Fragment() {
         viewModel = ViewModelProvider(this)[PhotoGalleryViewModel::class.java]
         val responseHandler = Handler()
         thumbnailDownloader = ThumbnailDownloader(responseHandler)
-        lifecycle.addObserver(thumbnailDownloader)
+        lifecycle.addObserver(thumbnailDownloader.fragmentLifecycleObserver)
         /*val flickrLiveData: LiveData<List<GalleryItem>> = FlickrFetchr().fetchPhotos()
         flickrLiveData.observe(this) { gallerayItems ->
             Log.d(TAG, "Response received:$gallerayItems")
@@ -67,6 +67,7 @@ class PhotoGalleryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewLifecycleOwner.lifecycle.addObserver(thumbnailDownloader.viewLifecycleObserver)
         viewModel.galleryItemLiveData.observe(viewLifecycleOwner) {
             Log.d(TAG, "Response received:$it")
             adapter.setList(it)
@@ -97,7 +98,12 @@ class PhotoGalleryFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        lifecycle.removeObserver(thumbnailDownloader)
+        viewLifecycleOwner.lifecycle.removeObserver(thumbnailDownloader.viewLifecycleObserver)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        lifecycle.removeObserver(thumbnailDownloader.fragmentLifecycleObserver)
     }
 
 /*    inner class PhotoAdapter : BaseBindingQuickAdapter<GalleryItem, ItemPhotoBinding>() {
