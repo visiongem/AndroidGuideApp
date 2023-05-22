@@ -66,11 +66,16 @@ class PhotoGalleryFragment : Fragment() {
         flickrLiveData.observe(this) { gallerayItems ->
             Log.d(TAG, "Response received:$gallerayItems")
         }*/
+        viewLifecycleOwnerLiveData.observe(viewLifecycleOwner){
+            it?.lifecycle?.addObserver(
+                thumbnailDownloader.viewLifecycleObserver
+            )
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.lifecycle.addObserver(thumbnailDownloader.viewLifecycleObserver)
+//        viewLifecycleOwner.lifecycle.addObserver(thumbnailDownloader.viewLifecycleObserver)
         viewModel.galleryItemLiveData.observe(viewLifecycleOwner) {
             Log.d(TAG, "Response received:$it")
             binding.swipeRefreshLayout.isRefreshing = false
