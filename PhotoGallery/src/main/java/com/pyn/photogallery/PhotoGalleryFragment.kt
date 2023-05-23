@@ -5,11 +5,16 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.chad.library.adapter.base.module.LoadMoreModule
@@ -47,7 +52,7 @@ class PhotoGalleryFragment : Fragment() {
     ): View {
         adapter = PhotoAdapter()
         _binding = FragmentPhotoGalleryBinding.inflate(layoutInflater, container, false)
-        binding.recyclerviewPhoto.layoutManager = LinearLayoutManager(context)
+        binding.recyclerviewPhoto.layoutManager = GridLayoutManager(context, 3)
         binding.recyclerviewPhoto.adapter = adapter
         return binding.root
     }
@@ -59,6 +64,7 @@ class PhotoGalleryFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
+        setHasOptionsMenu(true)
         viewModel = ViewModelProvider(this)[PhotoGalleryViewModel::class.java]
         val responseHandler = Handler(Looper.getMainLooper())
         thumbnailDownloader = ThumbnailDownloader(responseHandler)
@@ -74,6 +80,28 @@ class PhotoGalleryFragment : Fragment() {
         }*/
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_photo_gallery, menu)
+
+        val searchItem: MenuItem = menu.findItem(R.id.menu_item_search)
+        val searchView = searchItem.actionView as SearchView
+        searchView.apply {
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    Log.d(TAG, "onQueryTextSubmit:$query")
+                    viewModel.fetchPhotos(query)
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String): Boolean {
+                    Log.d(TAG, "onQueryTextChange:$newText")
+                    return false
+                }
+            })
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 //        viewLifecycleOwner.lifecycle.addObserver(thumbnailDownloader.viewLifecycleObserver)
@@ -84,7 +112,7 @@ class PhotoGalleryFragment : Fragment() {
         }
         binding.swipeRefreshLayout.setOnRefreshListener {
             lifecycleScope.launch {
-                if (binding.swipeRefreshLayout.isRefreshing){
+                if (binding.swipeRefreshLayout.isRefreshing) {
                     delay(3000)
                     binding.swipeRefreshLayout.isRefreshing = false
                 }
@@ -92,26 +120,26 @@ class PhotoGalleryFragment : Fragment() {
         }
     }
 
-/*    private class PhotoHolder(itemTextView: TextView) : RecyclerView.ViewHolder(itemTextView) {
-        val bindTitle: (CharSequence) -> Unit = itemTextView::setText
-    }
-
-    private class PhotoAdapter(private val galleryItems: List<GalleryItem>) : RecyclerView.Adapter<PhotoHolder>() {
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoHolder {
-            val textView = TextView(parent.context)
-            return PhotoHolder(textView)
+    /*    private class PhotoHolder(itemTextView: TextView) : RecyclerView.ViewHolder(itemTextView) {
+            val bindTitle: (CharSequence) -> Unit = itemTextView::setText
         }
 
-        override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
-            val galleryItem = galleryItems[position]
-            holder.bindTitle(galleryItem.title)
-        }
+        private class PhotoAdapter(private val galleryItems: List<GalleryItem>) : RecyclerView.Adapter<PhotoHolder>() {
 
-        override fun getItemCount(): Int {
-            return galleryItems.size
-        }
-    }*/
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoHolder {
+                val textView = TextView(parent.context)
+                return PhotoHolder(textView)
+            }
+
+            override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
+                val galleryItem = galleryItems[position]
+                holder.bindTitle(galleryItem.title)
+            }
+
+            override fun getItemCount(): Int {
+                return galleryItems.size
+            }
+        }*/
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -125,14 +153,14 @@ class PhotoGalleryFragment : Fragment() {
         lifecycle.removeObserver(thumbnailDownloader.fragmentLifecycleObserver)
     }
 
-/*    inner class PhotoAdapter : BaseBindingQuickAdapter<GalleryItem, ItemPhotoBinding>() {
+    /*    inner class PhotoAdapter : BaseBindingQuickAdapter<GalleryItem, ItemPhotoBinding>() {
 
-        override fun convert(holder: BaseBindingHolder, item: GalleryItem) {
-            with(holder.getViewBinding<ItemPhotoBinding>()) {
-                tvTitle.text = item.title
+            override fun convert(holder: BaseBindingHolder, item: GalleryItem) {
+                with(holder.getViewBinding<ItemPhotoBinding>()) {
+                    tvTitle.text = item.title
+                }
             }
-        }
-    }*/
+        }*/
 
     inner class PhotoAdapter : BaseBindingQuickAdapter<GalleryItem, ListItemGalleryBinding>(),
         LoadMoreModule {
@@ -140,7 +168,7 @@ class PhotoGalleryFragment : Fragment() {
         override fun convert(holder: BaseBindingHolder, item: GalleryItem) {
 
             with(holder.getViewBinding<ListItemGalleryBinding>()) {
-                this.root.load(item.url){
+                this.root.load(item.url) {
                     placeholder(R.drawable.mio)
                 }
             }
