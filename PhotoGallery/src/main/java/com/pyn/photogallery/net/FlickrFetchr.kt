@@ -2,13 +2,14 @@ package com.pyn.photogallery.net
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.BitmapFactory.decodeStream
 import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
 import com.pyn.photogallery.api.FlickrApi
+import com.pyn.photogallery.api.PhotoInterceptor
+import com.pyn.photogallery.bean.FlickrResponse
 import com.pyn.photogallery.bean.GalleryItem
 import com.pyn.photogallery.bean.PhotoDeserializer
 import com.pyn.photogallery.bean.PhotoResponse
@@ -34,12 +35,12 @@ class FlickrFetchr {
             .create()
 
         val httpClientBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
-        httpClientBuilder
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        httpClientBuilder.addInterceptor(PhotoInterceptor())
+        httpClientBuilder.addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
 
         val retrofit = Retrofit.Builder()
-            .client(httpClientBuilder.build())
             .baseUrl("https://www.flickr.com/")
+            .client(httpClientBuilder.build())
 //            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
             .addConverterFactory(GsonConverterFactory.create(gsonPhotoDeserializer))
 //            .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()))
@@ -47,14 +48,21 @@ class FlickrFetchr {
         flickrApi = retrofit.create(FlickrApi::class.java)
     }
 
-    /*fun fetchPhotos(): LiveData<List<GalleryItem>> {
+    fun fetchPhotosResponse(): LiveData<List<GalleryItem>> {
+        return fetchPhotoMetadata(flickrApi.fetchPhotosResponse())
+    }
+
+    fun searchPhotos(query: String): LiveData<List<GalleryItem>> {
+        return fetchPhotoMetadata(flickrApi.searchPhotos(query))
+    }
+
+    private fun fetchPhotoMetadata(flickrRequest:Call<FlickrResponse>):LiveData<List<GalleryItem>>{
         val responseLiveData: MutableLiveData<List<GalleryItem>> = MutableLiveData()
-        val flickrHomePageRequest: Call<FlickrResponse> = flickrApi.fetchPhotos()
 
         val repository = Repository()
-        repository.addFlickrCall(flickrHomePageRequest)
+        repository.addFlickrCallResponse(flickrRequest)
 
-        flickrHomePageRequest.enqueue(object : Callback<FlickrResponse> {
+        flickrRequest.enqueue(object : Callback<FlickrResponse> {
             override fun onResponse(call: Call<FlickrResponse>, response: Response<FlickrResponse>) {
                 Log.d(TAG, "Response received : ${response.body()}")
 
@@ -73,7 +81,7 @@ class FlickrFetchr {
             }
         })
         return responseLiveData
-    }*/
+    }
 
     fun fetchPhotos(): LiveData<List<GalleryItem>> {
         val responseLiveData: MutableLiveData<List<GalleryItem>> = MutableLiveData()
@@ -95,7 +103,7 @@ class FlickrFetchr {
 
             override fun onFailure(call: Call<PhotoDeserializer>, t: Throwable) {
                 Log.e(TAG, "Failed to fetch photos", t)
-                if (call.isCanceled){
+                if (call.isCanceled) {
                     Log.e(TAG, "request Canceled")
                 }
             }
@@ -123,10 +131,11 @@ class FlickrFetchr {
     }
 
     @WorkerThread
-    fun fetchPhoto(url:String):Bitmap?{
-        val response:Response<ResponseBody> = flickrApi.fetchUrlBytes(url).execute()
+    fun fetchPhoto(url: String): Bitmap? {
+        val response: Response<ResponseBody> = flickrApi.fetchUrlBytes(url).execute()
         val bitmap = response.body()?.byteStream()?.use(BitmapFactory::decodeStream)
         Log.i(TAG, "Decoded bitmap = $bitmap from Response = $response")
         return bitmap
     }
+
 }

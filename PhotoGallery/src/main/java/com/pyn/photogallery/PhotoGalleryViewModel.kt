@@ -16,7 +16,7 @@ class PhotoGalleryViewModel : ViewModel() {
 
     private val repository = Repository()
 
-    val galleryItemLiveData: LiveData<List<GalleryItem>> = FlickrFetchr().fetchPhotos()
+    val galleryItemLiveData: LiveData<List<GalleryItem>> = FlickrFetchr().searchPhotos("bicycle")
 
     override fun onCleared() {
         super.onCleared()

@@ -12,12 +12,12 @@ import retrofit2.Call
  */
 class Repository {
 
-//    private lateinit var flickrCall: Call<FlickrResponse>
+    private lateinit var flickrCallResponse: Call<FlickrResponse>
     private lateinit var flickrCall: Call<PhotoDeserializer>
 
-    /*fun addFlickrCall(call: Call<FlickrResponse>) {
-        flickrCall = call
-    }*/
+    fun addFlickrCallResponse(call: Call<FlickrResponse>) {
+        flickrCallResponse = call
+    }
     fun addFlickrCall(call: Call<PhotoDeserializer>) {
         flickrCall = call
     }
