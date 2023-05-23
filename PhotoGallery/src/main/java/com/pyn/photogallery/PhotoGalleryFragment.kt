@@ -2,6 +2,7 @@ package com.pyn.photogallery
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -59,18 +60,18 @@ class PhotoGalleryFragment : Fragment() {
         super.onCreate(savedInstanceState)
         retainInstance = true
         viewModel = ViewModelProvider(this)[PhotoGalleryViewModel::class.java]
-        val responseHandler = Handler()
+        val responseHandler = Handler(Looper.getMainLooper())
         thumbnailDownloader = ThumbnailDownloader(responseHandler)
         lifecycle.addObserver(thumbnailDownloader.fragmentLifecycleObserver)
         /*val flickrLiveData: LiveData<List<GalleryItem>> = FlickrFetchr().fetchPhotos()
         flickrLiveData.observe(this) { gallerayItems ->
             Log.d(TAG, "Response received:$gallerayItems")
         }*/
-        viewLifecycleOwnerLiveData.observe(viewLifecycleOwner){
+        /*viewLifecycleOwnerLiveData.observe(viewLifecycleOwner){
             it?.lifecycle?.addObserver(
                 thumbnailDownloader.viewLifecycleObserver
             )
-        }
+        }*/
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -88,7 +89,6 @@ class PhotoGalleryFragment : Fragment() {
                     binding.swipeRefreshLayout.isRefreshing = false
                 }
             }
-
         }
     }
 
@@ -116,7 +116,8 @@ class PhotoGalleryFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        viewLifecycleOwner.lifecycle.removeObserver(thumbnailDownloader.viewLifecycleObserver)
+        thumbnailDownloader.clearDownloadTasks()
+//        viewLifecycleOwner.lifecycle.removeObserver(thumbnailDownloader.viewLifecycleObserver)
     }
 
     override fun onDestroy() {
