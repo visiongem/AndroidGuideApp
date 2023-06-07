@@ -1,5 +1,7 @@
 package com.pyn.photogallery
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +9,7 @@ import androidx.lifecycle.switchMap
 import com.pyn.photogallery.bean.GalleryItem
 import com.pyn.photogallery.net.FlickrFetchr
 import com.pyn.photogallery.net.Repository
+import com.pyn.photogallery.utils.QueryPreferences
 
 /**
  * Description：
@@ -14,7 +17,7 @@ import com.pyn.photogallery.net.Repository
  * @e-mail 393507488@qq.com
  * @time   2022/12/6 15:43
  */
-class PhotoGalleryViewModel : ViewModel() {
+class PhotoGalleryViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private val repository = Repository()
 
@@ -23,13 +26,18 @@ class PhotoGalleryViewModel : ViewModel() {
     private val mutableSearchTerm = MutableLiveData<String>()
 
     init {
-        mutableSearchTerm.value = "cat"
+        mutableSearchTerm.value = QueryPreferences.getStoredQuery(app)/*"cat"*/
         galleryItemLiveData = mutableSearchTerm.switchMap { searchTerm ->
-            flickrFetchr.searchPhotos(searchTerm)
+            if (searchTerm.isBlank()){
+                flickrFetchr.fetchPhotos()
+            }else {
+                flickrFetchr.searchPhotos(searchTerm)
+            }
         }
     }
 
     fun fetchPhotos(query: String = "") {
+        QueryPreferences.setStoredQuery(app, query)
         mutableSearchTerm.value = query
     }
 
