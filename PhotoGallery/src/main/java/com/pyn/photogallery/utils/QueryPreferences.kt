@@ -2,6 +2,7 @@ package com.pyn.photogallery.utils
 
 import android.content.Context
 import android.preference.PreferenceManager
+import androidx.core.content.edit
 
 /**
  * Description：
@@ -19,10 +20,13 @@ object QueryPreferences {
     }
 
     fun setStoredQuery(context: Context, query: String) {
-        PreferenceManager.getDefaultSharedPreferences(context)
+        /*PreferenceManager.getDefaultSharedPreferences(context)
             .edit()
             .putString(PREF_SEARCH_QUERY, query)
-            .apply()
+            .apply()*/
+        PreferenceManager.getDefaultSharedPreferences(context)
+            .edit() {
+                putString(PREF_SEARCH_QUERY, query).apply()
+            }
     }
-
 }
