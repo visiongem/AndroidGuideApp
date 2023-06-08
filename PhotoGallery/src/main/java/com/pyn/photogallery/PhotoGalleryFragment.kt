@@ -16,6 +16,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import coil.load
 import com.chad.library.adapter.base.module.LoadMoreModule
 import com.pyn.photogallery.base.BaseBindingQuickAdapter
@@ -23,6 +27,7 @@ import com.pyn.photogallery.bean.GalleryItem
 import com.pyn.photogallery.databinding.FragmentPhotoGalleryBinding
 import com.pyn.photogallery.databinding.ListItemGalleryBinding
 import com.pyn.photogallery.net.ThumbnailDownloader
+import com.pyn.photogallery.utils.PollWorker
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -69,6 +74,12 @@ class PhotoGalleryFragment : Fragment() {
         val responseHandler = Handler(Looper.getMainLooper())
         thumbnailDownloader = ThumbnailDownloader(responseHandler)
         lifecycle.addObserver(thumbnailDownloader.fragmentLifecycleObserver)
+
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .build()
+        val workRequest = OneTimeWorkRequest.Builder(PollWorker::class.java).setConstraints(constraints).build()
+        WorkManager.getInstance(requireContext()).enqueue(workRequest)
         /*val flickrLiveData: LiveData<List<GalleryItem>> = FlickrFetchr().fetchPhotos()
         flickrLiveData.observe(this) { gallerayItems ->
             Log.d(TAG, "Response received:$gallerayItems")
