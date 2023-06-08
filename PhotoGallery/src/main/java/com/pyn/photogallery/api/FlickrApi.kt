@@ -1,6 +1,5 @@
 package com.pyn.photogallery.api
 
-import com.pyn.photogallery.FlickrConstants
 import com.pyn.photogallery.bean.FlickrResponse
 import com.pyn.photogallery.bean.PhotoDeserializer
 import okhttp3.ResponseBody

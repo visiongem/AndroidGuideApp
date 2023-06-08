@@ -48,15 +48,25 @@ class FlickrFetchr {
         flickrApi = retrofit.create(FlickrApi::class.java)
     }
 
+    fun fetchPhototsRequest(): Call<FlickrResponse> {
+        return flickrApi.fetchPhotosResponse()
+    }
+
     fun fetchPhotosResponse(): LiveData<List<GalleryItem>> {
-        return fetchPhotoMetadata(flickrApi.fetchPhotosResponse())
+//        return fetchPhotoMetadata(flickrApi.fetchPhotosResponse())
+        return fetchPhotoMetadata(fetchPhototsRequest())
     }
 
     fun searchPhotos(query: String): LiveData<List<GalleryItem>> {
-        return fetchPhotoMetadata(flickrApi.searchPhotos(query))
+//        return fetchPhotoMetadata(flickrApi.searchPhotos(query))
+        return fetchPhotoMetadata(searchPhotosRequest(query))
     }
 
-    private fun fetchPhotoMetadata(flickrRequest:Call<FlickrResponse>):LiveData<List<GalleryItem>>{
+    fun searchPhotosRequest(query: String):Call<FlickrResponse>{
+        return flickrApi.searchPhotos(query)
+    }
+
+    private fun fetchPhotoMetadata(flickrRequest: Call<FlickrResponse>): LiveData<List<GalleryItem>> {
         val responseLiveData: MutableLiveData<List<GalleryItem>> = MutableLiveData()
 
         val repository = Repository()
@@ -75,7 +85,7 @@ class FlickrFetchr {
 
             override fun onFailure(call: Call<FlickrResponse>, t: Throwable) {
                 Log.e(TAG, "Failed to fetch photos", t)
-                if (call.isCanceled){
+                if (call.isCanceled) {
                     Log.e(TAG, "request Canceled")
                 }
             }
