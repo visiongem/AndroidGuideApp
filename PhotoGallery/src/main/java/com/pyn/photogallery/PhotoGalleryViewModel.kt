@@ -25,12 +25,14 @@ class PhotoGalleryViewModel(private val app: Application) : AndroidViewModel(app
     private val flickrFetchr = FlickrFetchr()
     private val mutableSearchTerm = MutableLiveData<String>()
 
+    val searchTerm: String get() = mutableSearchTerm.value ?: ""
+
     init {
         mutableSearchTerm.value = QueryPreferences.getStoredQuery(app)/*"cat"*/
         galleryItemLiveData = mutableSearchTerm.switchMap { searchTerm ->
-            if (searchTerm.isBlank()){
+            if (searchTerm.isBlank()) {
                 flickrFetchr.fetchPhotos()
-            }else {
+            } else {
                 flickrFetchr.searchPhotos(searchTerm)
             }
         }
