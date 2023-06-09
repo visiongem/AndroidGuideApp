@@ -2,12 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/menu_item_search"
+    <item
+        android:id="@+id/menu_item_search"
         android:title="@string/search"
-        app:showAsAction="ifRoom"
-        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="ifRoom" />
 
-    <item android:id="@+id/menu_item_clear"
+    <item
+        android:id="@+id/menu_item_clear"
         android:title="@string/clear_search"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_item_toggle_polling"
+        android:title="@string/start_polling"
+        app:showAsAction="ifRoom|withText" />
 </menu>
