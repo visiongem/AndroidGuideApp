@@ -30,6 +30,7 @@ import com.pyn.photogallery.databinding.ListItemGalleryBinding
 import com.pyn.photogallery.net.ThumbnailDownloader
 import com.pyn.photogallery.utils.PollWorker
 import com.pyn.photogallery.utils.QueryPreferences
+import com.pyn.photogallery.utils.VisibleFragment
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -37,7 +38,7 @@ import java.util.concurrent.TimeUnit
 private const val TAG = "PhotoGalleryFragment"
 private const val POLL_WORK = "POLL_WORK"
 
-class PhotoGalleryFragment : Fragment() {
+class PhotoGalleryFragment : VisibleFragment() {
 
     private var _binding: FragmentPhotoGalleryBinding? = null
     private val binding get() = _binding!!
