@@ -1,5 +1,6 @@
 package com.pyn.photogallery
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -22,6 +23,8 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import coil.load
+import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.listener.OnItemChildClickListener
 import com.chad.library.adapter.base.module.LoadMoreModule
 import com.pyn.photogallery.base.BaseBindingQuickAdapter
 import com.pyn.photogallery.bean.GalleryItem
@@ -47,7 +50,6 @@ class PhotoGalleryFragment : VisibleFragment() {
     //    private val viewModel: PhotoGalleryViewModel by viewModels()
     private lateinit var viewModel: PhotoGalleryViewModel
     lateinit var thumbnailDownloader: ThumbnailDownloader<BaseBindingQuickAdapter.BaseBindingHolder>
-
 
     // 当前请求页面
     private var currentPage = 1
@@ -224,6 +226,11 @@ class PhotoGalleryFragment : VisibleFragment() {
             with(holder.getViewBinding<ListItemGalleryBinding>()) {
                 this.root.load(item.url) {
                     placeholder(R.drawable.mio)
+                }
+                this.root.setOnClickListener {
+//                    val intent = Intent(Intent.ACTION_VIEW, item.photoPageUri)
+                    val intent = PhotoPageActivity.newIntent(requireContext(), item.photoPageUri)
+                    startActivity(intent)
                 }
             }
 
