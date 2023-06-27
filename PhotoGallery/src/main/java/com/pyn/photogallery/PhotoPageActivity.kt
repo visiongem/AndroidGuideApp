@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import com.pyn.photogallery.databinding.ActivityPhotoPageBinding
 
@@ -17,7 +16,6 @@ import com.pyn.photogallery.databinding.ActivityPhotoPageBinding
 class PhotoPageActivity : AppCompatActivity() {
 
     private lateinit var mBinding: ActivityPhotoPageBinding
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

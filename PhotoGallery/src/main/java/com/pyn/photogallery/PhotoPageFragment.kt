@@ -2,12 +2,16 @@ package com.pyn.photogallery
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import android.webkit.WebView.setWebContentsDebuggingEnabled
 import android.webkit.WebViewClient
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.pyn.photogallery.databinding.FragmentPhotoPageBinding
 import com.pyn.photogallery.utils.VisibleFragment
@@ -18,6 +22,7 @@ import com.pyn.photogallery.utils.VisibleFragment
  * @e-mail 393507488@qq.com
  * @time   2023/6/26 16:49
  */
+private const val TAG = "PhotoPageFragment"
 private const val ARG_URI = "photo_page_url"
 
 class PhotoPageFragment : VisibleFragment() {
@@ -29,7 +34,7 @@ class PhotoPageFragment : VisibleFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        uri = arguments?.getParcelable(ARG_URI)?:Uri.EMPTY
+        uri = arguments?.getParcelable(ARG_URI) ?: Uri.EMPTY
     }
 
     override fun onCreateView(
@@ -44,13 +49,13 @@ class PhotoPageFragment : VisibleFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.progressBar.max = 100
-        with(binding.webView){
+        with(binding.webView) {
             settings.javaScriptEnabled = true
-            webChromeClient = object :WebChromeClient(){
+            webChromeClient = object : WebChromeClient() {
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                    if (newProgress == 100){
+                    if (newProgress == 100) {
                         binding.progressBar.visibility = View.GONE
-                    }else{
+                    } else {
                         binding.progressBar.visibility = View.VISIBLE
                         binding.progressBar.progress = newProgress
                     }
@@ -61,8 +66,25 @@ class PhotoPageFragment : VisibleFragment() {
                 }
             }
             webViewClient = WebViewClient()
+            addJavascriptInterface(object : Any() {
+                @JavascriptInterface
+                fun send(message: String) {
+                    Log.i(TAG, "Received message:$message")
+                }
+            }, "androidObject")
+            setWebContentsDebuggingEnabled(true)
             loadUrl(uri.toString())
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (binding.webView.canGoBack()) {
+                    binding.webView.goBack()
+                } else {
+                    requireActivity().finish()
+                }
+            }
+        })
     }
 
     companion object {

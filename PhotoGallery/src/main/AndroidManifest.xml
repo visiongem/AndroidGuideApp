@@ -10,7 +10,7 @@
     <permission
         android:name="com.pyn.photogallery.PRIVATE"
         android:protectionLevel="signature" />
-    <uses-permission android:name="com.pyn.photogallery.PRIVATE"/>
+    <uses-permission android:name="com.pyn.photogallery.PRIVATE" />
 
     <application
         android:name=".PhotoGalleryApplication"
@@ -29,11 +29,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PhotoPageActivity" />
+        <activity
+            android:name=".PhotoPageActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+
         <receiver
             android:name=".utils.NotificationReceiver"
-            android:permission="com.pyn.photogallery.PRIVATE"
-            android:exported="false">
+            android:exported="false"
+            android:permission="com.pyn.photogallery.PRIVATE">
             <intent-filter android:priority="-999">
                 <action android:name="com.pyn.photogallery.SHOW_NOTIFITION" />
             </intent-filter>
