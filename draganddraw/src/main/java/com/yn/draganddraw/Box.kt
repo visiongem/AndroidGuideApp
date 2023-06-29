@@ -1,6 +1,8 @@
 package com.yn.draganddraw
 
 import android.graphics.PointF
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Description：
@@ -8,7 +10,8 @@ import android.graphics.PointF
  * @e-mail 393507488@qq.com
  * @time   2023/6/29 17:00
  */
-class Box(val start: PointF) {
+@Parcelize
+class Box(val start: PointF): Parcelable {
 
     var end: PointF = start
 

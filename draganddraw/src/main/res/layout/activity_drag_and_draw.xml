@@ -7,6 +7,7 @@
     tools:context=".DragAndDrawActivity">
 
     <com.yn.draganddraw.BoxDrawingView
+        android:id="@+id/box_drawing_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
