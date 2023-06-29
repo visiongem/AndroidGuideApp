@@ -12,7 +12,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
-import androidx.fragment.app.Fragment
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -23,8 +24,6 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import coil.load
-import com.chad.library.adapter.base.BaseQuickAdapter
-import com.chad.library.adapter.base.listener.OnItemChildClickListener
 import com.chad.library.adapter.base.module.LoadMoreModule
 import com.pyn.photogallery.base.BaseBindingQuickAdapter
 import com.pyn.photogallery.bean.GalleryItem
@@ -229,8 +228,13 @@ class PhotoGalleryFragment : VisibleFragment() {
                 }
                 this.root.setOnClickListener {
 //                    val intent = Intent(Intent.ACTION_VIEW, item.photoPageUri)
-                    val intent = PhotoPageActivity.newIntent(requireContext(), item.photoPageUri)
-                    startActivity(intent)
+                    /*val intent = PhotoPageActivity.newIntent(requireContext(), item.photoPageUri)
+                    startActivity(intent)*/
+
+                    CustomTabsIntent.Builder()
+                        .setToolbarColor(ContextCompat.getColor(requireContext(), R.color.purple_500))
+                        .setShowTitle(true)
+                        .build().launchUrl(requireContext(),item.photoPageUri)
                 }
             }
 
