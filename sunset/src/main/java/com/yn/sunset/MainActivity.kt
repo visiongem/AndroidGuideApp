@@ -12,6 +12,10 @@ import com.yn.sunset.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var initSunTop: Float = 0.0f
+    private var initSunBottom: Float = 0.0f
+    private var isUp = false
+
     private val blueSkyColor: Int by lazy {
         ContextCompat.getColor(this@MainActivity, R.color.blue_sky)
     }
@@ -26,12 +30,28 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+    }
 
-        binding.scene.setOnClickListener { startAnimation() }
+    override fun onResume() {
+        super.onResume()
+        binding.sky.post {
+            initSunTop = binding.sky.measuredHeight / 2 - 50f.dp
+            initSunBottom = binding.sky.measuredHeight / 2 + 50f.dp
+        }
+
+        binding.scene.setOnClickListener {
+            isUp = if (isUp) {
+                startUpAnimator()
+                false
+            } else {
+                startAnimation()
+                true
+            }
+        }
     }
 
     private fun startAnimation() {
-        val sunStartY = binding.sun.top.toFloat()
+        val sunStartY = initSunTop
         val sunEndY = binding.sky.height.toFloat()
 
         val heightAnimator = ObjectAnimator.ofFloat(binding.sun, "y", sunStartY, sunEndY).setDuration(3000)
@@ -48,7 +68,27 @@ class MainActivity : AppCompatActivity() {
         val animatorSet = AnimatorSet()
         animatorSet.play(heightAnimator).with(sunsetSkyAnimator).before(nightSkyAnimator)
         animatorSet.start()
-   /*     heightAnimator.start()
-        sunsetSkyAnimator.start()*/
+        /*     heightAnimator.start()
+             sunsetSkyAnimator.start()*/
+    }
+
+    private fun startUpAnimator() {
+        val sunStartY = binding.sky.height.toFloat()
+        val sunEndY = initSunTop
+
+        val heightAnimator = ObjectAnimator.ofFloat(binding.sun, "y", sunStartY, sunEndY).setDuration(3000)
+        heightAnimator.interpolator = AccelerateInterpolator()
+
+        val sunsetSkyAnimator = ObjectAnimator
+            .ofInt(binding.sky, "backgroundColor", sunsetSkyColor, blueSkyColor).setDuration(3000)
+        sunsetSkyAnimator.setEvaluator(ArgbEvaluator())
+
+        val nightSkyAnimator = ObjectAnimator
+            .ofInt(binding.sky, "backgroundColor", nightSkyColor, sunsetSkyColor).setDuration(1500)
+        nightSkyAnimator.setEvaluator(ArgbEvaluator())
+
+        val animatorSet = AnimatorSet()
+        animatorSet.play(nightSkyAnimator).before(heightAnimator).with(sunsetSkyAnimator)
+        animatorSet.start()
     }
 }
